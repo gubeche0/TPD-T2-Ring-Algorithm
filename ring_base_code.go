@@ -1,6 +1,3 @@
-// Código exemplo para o trabaho de sistemas distribuidos (eleicao em anel)
-// By Cesar De Rose - 2022
-
 package main
 
 import (
@@ -8,9 +5,36 @@ import (
 	"sync"
 )
 
+type message_type int
+
+const (
+	// Election message
+	ELECTION message_type = iota
+	// Election response message
+	ELECTION_RESPONSE
+	// Election winner message
+	ELECTION_WINNER
+)
+
+func (s message_type) String() string {
+	switch s {
+	case ELECTION:
+		return "Eleicão"
+	case ELECTION_RESPONSE:
+		return "Resposta Eleição"
+	case ELECTION_WINNER:
+		return "Resultado da eleição"
+	}
+	return "Desconhecido"
+}
+
 type mensagem struct {
-	tipo  int    // tipo da mensagem para fazer o controle do que fazer (eleição, confirmacao da eleicao)
-	corpo [3]int // conteudo da mensagem para colocar os ids (usar um tamanho ocmpativel com o numero de processos no anel)
+	tipo  message_type // tipo da mensagem para fazer o controle do que fazer (eleição, confirmacao da eleicao)
+	corpo map[int]int  // conteudo da mensagem para colocar os ids (usar um tamanho ocmpativel com o numero de processos no anel)
+}
+
+func (m mensagem) String() string {
+	return fmt.Sprintf("%s: %v", m.tipo, m.corpo)
 }
 
 var (
@@ -31,10 +55,8 @@ func ElectionControler(in chan int) {
 
 	var temp mensagem
 
-	temp.tipo = 1
-	temp.corpo[0] = -1
-	temp.corpo[1] = -1
-	temp.corpo[2] = -1
+	temp.tipo = ELECTION
+	temp.corpo = make(map[int]int)
 
 	chans[2] <- temp // pedir eleição para o processo 0
 	fmt.Printf("Controle: eleicao enviada \n")
@@ -47,7 +69,7 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem) {
 
 	temp := <-in
 
-	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
+	fmt.Printf("%2d: recebi mensagem: %s\n", TaskId, temp)
 	temp.corpo[TaskId] = TaskId
 
 	out <- temp
@@ -55,7 +77,7 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem) {
 
 	if TaskId == 0 {
 		temp := <-in
-		fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
+		fmt.Printf("%2d: recebi mensagem: %s\n", TaskId, temp)
 		controle <- -5
 		fmt.Printf("%2d: enviei confirmação controle \n", TaskId)
 

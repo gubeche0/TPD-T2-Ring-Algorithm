@@ -38,12 +38,12 @@ func (m mensagem) String() string {
 	switch m.tipo {
 	case ELECTION:
 		body := m.corpo.(map[int]int)
-		corpo := "("
+		corpo := "[ "
 		for _, val := range body {
 			corpo += fmt.Sprintf("%d ", val)
 		}
 
-		corpo += ")"
+		corpo += "]"
 		return fmt.Sprintf("%s: %v", m.tipo, corpo)
 
 	case ELECTION_WINNER:

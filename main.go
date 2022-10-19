@@ -30,6 +30,11 @@ func main() {
 			IsAlive: true,
 			Message: make(chan mensagem),
 		},
+		{
+			TaskId:  3,
+			IsAlive: true,
+			Message: make(chan mensagem),
+		},
 	}
 
 	done := make(chan bool) // channel to stop the nodes
@@ -42,17 +47,44 @@ func main() {
 		rede.InsereNode(node) // Insere os nós na rede
 	}
 
+	time.Sleep(time.Second)
 	log.Println("Rede iniciada\n ")
 
 	log.Println("Matando o node 0")
 	nodes[0].IsAlive = false
+	time.Sleep(time.Second)
 
-	time.Sleep(time.Second * 1)
+	rede.Debug()
+
+	log.Println("Matando o node 2")
+	nodes[2].IsAlive = false
+	time.Sleep(time.Second * 2)
+
+	rede.Debug()
+
+	log.Println("Matando o node 3")
+	nodes[3].IsAlive = false
+	time.Sleep(time.Second)
+
+	rede.Debug()
+
+	log.Println("Revivendo o node 0")
+	log.Println("Revivendo o node 2")
+	log.Println("Revivendo o node 3")
+	nodes[0].IsAlive = true
+	nodes[2].IsAlive = true
+	nodes[3].IsAlive = true
+	time.Sleep(time.Second)
+	rede.Debug()
+
+	log.Println("Matando o node 1")
+	nodes[1].IsAlive = false
+	time.Sleep(time.Second)
 
 	rede.Debug()
 
 	log.Println("Fim")
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second)
 
 	done <- true // stop the nodes
 

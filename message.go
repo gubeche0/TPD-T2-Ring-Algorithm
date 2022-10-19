@@ -11,7 +11,7 @@ const (
 	// ELECTION_RESPONSE
 	// Election winner message
 	ELECTION_WINNER
-	NEW_NODE
+	// NEW_NODE
 )
 
 func (s message_type) String() string {
@@ -22,24 +22,34 @@ func (s message_type) String() string {
 	// return "Resposta Eleição"
 	case ELECTION_WINNER:
 		return "Resultado da eleição"
-	case NEW_NODE:
-		return "Novo nó"
+		// case NEW_NODE:
+		// 	return "Novo nó"
 	}
 	return "Desconhecido"
 }
 
 type mensagem struct {
 	tipo  message_type // tipo da mensagem para fazer o controle do que fazer (eleição, confirmacao da eleicao)
-	corpo map[int]int  // conteudo da mensagem para colocar os ids (usar um tamanho ocmpativel com o numero de processos no anel)
+	corpo interface{}  // conteudo da mensagem para colocar os ids (usar um tamanho ocmpativel com o numero de processos no anel)
 	owner int          // id do processo que enviou a mensagem
 }
 
 func (m mensagem) String() string {
-	corpo := "("
-	for _, val := range m.corpo {
-		corpo += fmt.Sprintf("%d", val)
-	}
+	switch m.tipo {
+	case ELECTION:
+		body := m.corpo.(map[int]int)
+		corpo := "("
+		for _, val := range body {
+			corpo += fmt.Sprintf("%d ", val)
+		}
 
-	corpo += ")"
-	return fmt.Sprintf("%s: %v", m.tipo, corpo)
+		corpo += ")"
+		return fmt.Sprintf("%s: %v", m.tipo, corpo)
+
+	case ELECTION_WINNER:
+		// case NEW_NODE:
+		body := m.corpo.(*Node)
+		return fmt.Sprintf("%s: %v", m.tipo, body.TaskId)
+	}
+	return "Desconhecido"
 }

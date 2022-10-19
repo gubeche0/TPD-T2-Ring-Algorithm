@@ -1,10 +1,18 @@
 package main
 
-import "time"
+import (
+	"log"
+	"time"
+)
+
+var (
+	rede = &Rede{}
+)
 
 func main() {
 
-	rede := &Rede{}
+	// Utiliza seed padrao para gerar sempre a mesma sequencia de numeros aleatorios para teste
+	// rand.Seed(time.Now().UnixNano())
 
 	nodes := []*Node{
 		{
@@ -34,7 +42,17 @@ func main() {
 		rede.InsereNode(node) // Insere os nós na rede
 	}
 
-	time.Sleep(time.Second * 5)
+	log.Println("Rede iniciada\n ")
+
+	log.Println("Matando o node 0")
+	nodes[0].IsAlive = false
+
+	time.Sleep(time.Second * 1)
+
+	rede.Debug()
+
+	log.Println("Fim")
+	time.Sleep(time.Second * 2)
 
 	done <- true // stop the nodes
 

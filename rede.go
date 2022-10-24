@@ -43,12 +43,6 @@ func (r *Rede) InsereNode(node *Node) {
 	}
 
 	r.Nodes = append(r.Nodes, node)
-
-	// node.SendMessageToNext(mensagem{
-	// 	tipo:  NEW_NODE,
-	// 	owner: node.TaskId,
-	// 	corpo: node,
-	// })
 }
 
 func (r *Rede) Debug() {

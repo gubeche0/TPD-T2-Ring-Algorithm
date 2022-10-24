@@ -7,11 +7,8 @@ type message_type int
 const (
 	// Election message
 	ELECTION message_type = iota
-	// Election response message
-	// ELECTION_RESPONSE
 	// Election winner message
 	ELECTION_WINNER
-	// NEW_NODE
 )
 
 func (s message_type) String() string {

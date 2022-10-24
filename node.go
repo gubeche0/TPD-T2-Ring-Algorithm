@@ -17,7 +17,7 @@ type Node struct {
 }
 
 func (n *Node) Handle(done <-chan bool) {
-	timeBetweenChecks := time.Duration(rand.Intn(500)+500) * time.Millisecond // 100ms - 200ms
+	timeBetweenChecks := time.Duration(rand.Intn(500)+500) * time.Millisecond // 500ms - 1000ms
 	checkMaster := time.NewTicker(timeBetweenChecks)
 	for {
 		select {
@@ -26,7 +26,7 @@ func (n *Node) Handle(done <-chan bool) {
 		case <-done:
 			return
 		case <-checkMaster.C:
-			if !n.MasterIsAlive() {
+			if n.IsAlive && !n.MasterIsAlive() {
 				log.Printf("Node %d: Master(%d) está morto, iniciando eleição", n.TaskId, n.Master)
 				n.InitElection()
 			}
